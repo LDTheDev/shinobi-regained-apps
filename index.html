@@ -1,0 +1,927 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Lore Actor Application — Shinobi Regained</title>
+<link href="https://fonts.googleapis.com/css2?family=Cinzel+Decorative:wght@400;700;900&family=Cinzel:wght@400;600;700&family=IM+Fell+English:ital@0;1&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --blood: #8b1a1a;
+    --ember: #c0392b;
+    --gold: #c9a84c;
+    --pale-gold: #e8d5a3;
+    --ink: #0a0804;
+    --paper: #f5ead6;
+    --scroll: #ede0c4;
+    --smoke: #2a1f14;
+    --ash: #6b5d4f;
+    --shadow: rgba(0,0,0,0.7);
+  }
+
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    background: var(--ink);
+    color: var(--paper);
+    font-family: 'IM Fell English', Georgia, serif;
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+  }
+
+  /* BACKGROUND */
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background:
+      radial-gradient(ellipse at 20% 50%, rgba(139,26,26,0.15) 0%, transparent 60%),
+      radial-gradient(ellipse at 80% 20%, rgba(201,168,76,0.08) 0%, transparent 50%),
+      repeating-linear-gradient(
+        0deg,
+        transparent,
+        transparent 2px,
+        rgba(255,255,255,0.01) 2px,
+        rgba(255,255,255,0.01) 4px
+      );
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  /* KUNAI DIVIDERS */
+  .kunai-divider {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin: 24px 0;
+  }
+  .kunai-divider::before,
+  .kunai-divider::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, transparent, var(--gold), transparent);
+  }
+  .kunai-divider span {
+    color: var(--gold);
+    font-size: 18px;
+  }
+
+  /* SEAL WATERMARK */
+  .seal-bg {
+    position: fixed;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 600px;
+    height: 600px;
+    opacity: 0.03;
+    pointer-events: none;
+    z-index: 0;
+    animation: sealRotate 60s linear infinite;
+  }
+  @keyframes sealRotate {
+    to { transform: translate(-50%, -50%) rotate(360deg); }
+  }
+
+  .container {
+    max-width: 780px;
+    margin: 0 auto;
+    padding: 60px 24px 80px;
+    position: relative;
+    z-index: 1;
+  }
+
+  /* HEADER */
+  .header {
+    text-align: center;
+    margin-bottom: 48px;
+    animation: fadeDown 1s ease both;
+  }
+  @keyframes fadeDown {
+    from { opacity: 0; transform: translateY(-30px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .village-seal {
+    width: 90px;
+    height: 90px;
+    margin: 0 auto 20px;
+    position: relative;
+  }
+  .village-seal svg {
+    width: 100%;
+    height: 100%;
+    filter: drop-shadow(0 0 12px rgba(201,168,76,0.5));
+    animation: pulse 3s ease-in-out infinite;
+  }
+  @keyframes pulse {
+    0%, 100% { filter: drop-shadow(0 0 12px rgba(201,168,76,0.5)); }
+    50% { filter: drop-shadow(0 0 24px rgba(201,168,76,0.8)); }
+  }
+
+  .header-tag {
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 6px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 12px;
+  }
+
+  h1 {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: clamp(22px, 5vw, 38px);
+    font-weight: 900;
+    color: var(--pale-gold);
+    text-shadow: 0 0 40px rgba(201,168,76,0.3), 2px 2px 0 var(--blood);
+    line-height: 1.2;
+    margin-bottom: 8px;
+  }
+
+  .subtitle {
+    font-size: 15px;
+    color: var(--ash);
+    font-style: italic;
+    letter-spacing: 1px;
+  }
+
+  /* WARNING SCROLL */
+  .warning-scroll {
+    background: linear-gradient(135deg, #1a0a0a 0%, #2a1010 50%, #1a0a0a 100%);
+    border: 1px solid var(--blood);
+    border-left: 4px solid var(--ember);
+    padding: 28px 32px;
+    margin: 0 0 40px;
+    position: relative;
+    animation: fadeUp 0.8s 0.3s ease both;
+    box-shadow: inset 0 0 40px rgba(139,26,26,0.15), 0 4px 20px rgba(0,0,0,0.5);
+  }
+  @keyframes fadeUp {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+  }
+
+  .warning-scroll::before {
+    content: '⚠';
+    position: absolute;
+    top: -14px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--ember);
+    color: var(--paper);
+    font-size: 16px;
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    line-height: 28px;
+    text-align: center;
+  }
+
+  .warning-title {
+    font-family: 'Cinzel', serif;
+    font-size: 13px;
+    letter-spacing: 4px;
+    color: var(--ember);
+    text-transform: uppercase;
+    margin-bottom: 16px;
+    text-align: center;
+  }
+
+  .warning-rule {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    margin-bottom: 12px;
+    line-height: 1.6;
+    font-size: 14px;
+    color: var(--pale-gold);
+  }
+  .warning-rule:last-child { margin-bottom: 0; }
+
+  .rule-icon {
+    color: var(--ember);
+    font-size: 16px;
+    flex-shrink: 0;
+    margin-top: 2px;
+  }
+
+  .rule-bold {
+    color: #ff6b6b;
+    font-weight: bold;
+    font-style: normal;
+  }
+
+  /* FORM CARD */
+  .form-card {
+    background: linear-gradient(160deg, #100c07 0%, #1a1208 100%);
+    border: 1px solid rgba(201,168,76,0.2);
+    padding: 40px;
+    position: relative;
+    animation: fadeUp 0.8s 0.5s ease both;
+  }
+
+  .form-card::before,
+  .form-card::after {
+    content: '';
+    position: absolute;
+    width: 20px;
+    height: 20px;
+    border-color: var(--gold);
+    border-style: solid;
+  }
+  .form-card::before { top: -1px; left: -1px; border-width: 2px 0 0 2px; }
+  .form-card::after { bottom: -1px; right: -1px; border-width: 0 2px 2px 0; }
+
+  .section-label {
+    font-family: 'Cinzel', serif;
+    font-size: 10px;
+    letter-spacing: 5px;
+    color: var(--gold);
+    text-transform: uppercase;
+    margin-bottom: 20px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .section-label::after {
+    content: '';
+    flex: 1;
+    height: 1px;
+    background: linear-gradient(90deg, rgba(201,168,76,0.4), transparent);
+  }
+
+  .form-group {
+    margin-bottom: 24px;
+  }
+
+  label {
+    display: block;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--pale-gold);
+    text-transform: uppercase;
+    margin-bottom: 8px;
+  }
+
+  label .req {
+    color: var(--ember);
+    margin-left: 4px;
+  }
+
+  input[type="text"],
+  input[type="number"],
+  textarea,
+  select {
+    width: 100%;
+    background: rgba(255,255,255,0.03);
+    border: 1px solid rgba(201,168,76,0.2);
+    border-bottom: 1px solid rgba(201,168,76,0.5);
+    color: var(--paper);
+    font-family: 'IM Fell English', serif;
+    font-size: 15px;
+    padding: 12px 16px;
+    outline: none;
+    transition: all 0.3s;
+    -webkit-appearance: none;
+    appearance: none;
+  }
+
+  input:focus,
+  textarea:focus,
+  select:focus {
+    border-color: var(--gold);
+    background: rgba(201,168,76,0.05);
+    box-shadow: 0 0 0 1px rgba(201,168,76,0.2), inset 0 0 20px rgba(201,168,76,0.03);
+  }
+
+  textarea { resize: vertical; min-height: 110px; line-height: 1.6; }
+
+  select option {
+    background: #1a1208;
+    color: var(--paper);
+  }
+
+  .form-hint {
+    font-size: 12px;
+    color: var(--ash);
+    margin-top: 6px;
+    font-style: italic;
+    line-height: 1.5;
+  }
+
+  /* CHECKBOX GROUP */
+  .checkbox-group {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .checkbox-item {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    border: 1px solid rgba(201,168,76,0.15);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    color: var(--ash);
+    user-select: none;
+  }
+  .checkbox-item:hover {
+    border-color: rgba(201,168,76,0.4);
+    color: var(--pale-gold);
+    background: rgba(201,168,76,0.04);
+  }
+  .checkbox-item input { display: none; }
+  .checkbox-item .box {
+    width: 16px;
+    height: 16px;
+    border: 1px solid rgba(201,168,76,0.4);
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s;
+    font-size: 10px;
+  }
+  .checkbox-item input:checked + .box {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+  }
+  .checkbox-item input:checked ~ span {
+    color: var(--pale-gold);
+  }
+
+  /* RADIO GROUP */
+  .radio-group {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 4px;
+  }
+
+  .radio-item {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    padding: 10px 16px;
+    border: 1px solid rgba(201,168,76,0.2);
+    cursor: pointer;
+    transition: all 0.2s;
+    font-size: 13px;
+    color: var(--ash);
+    user-select: none;
+  }
+  .radio-item:hover { border-color: var(--gold); color: var(--pale-gold); }
+  .radio-item input { display: none; }
+  .radio-item .dot {
+    width: 14px; height: 14px;
+    border-radius: 50%;
+    border: 1px solid rgba(201,168,76,0.5);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.2s;
+  }
+  .radio-item input:checked + .dot {
+    border-color: var(--gold);
+    background: var(--gold);
+    box-shadow: 0 0 8px rgba(201,168,76,0.5);
+  }
+  .radio-item input:checked ~ span { color: var(--pale-gold); }
+  .radio-item.selected { border-color: var(--gold); background: rgba(201,168,76,0.05); }
+
+  /* OATH SECTION */
+  .oath-section {
+    background: linear-gradient(135deg, rgba(201,168,76,0.05), rgba(139,26,26,0.05));
+    border: 1px solid rgba(201,168,76,0.3);
+    padding: 28px;
+    margin: 32px 0;
+    text-align: center;
+    position: relative;
+  }
+  .oath-text {
+    font-style: italic;
+    font-size: 14px;
+    line-height: 1.9;
+    color: var(--pale-gold);
+  }
+  .oath-text strong {
+    color: var(--gold);
+    font-style: normal;
+  }
+
+  .oath-confirm {
+    margin-top: 20px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    cursor: pointer;
+    font-family: 'Cinzel', serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--ash);
+    text-transform: uppercase;
+    user-select: none;
+  }
+  .oath-confirm:hover { color: var(--pale-gold); }
+  .oath-confirm input { display: none; }
+  .oath-check {
+    width: 20px; height: 20px;
+    border: 2px solid rgba(201,168,76,0.4);
+    display: flex; align-items: center; justify-content: center;
+    transition: all 0.3s;
+    font-size: 12px;
+  }
+  .oath-confirm input:checked + .oath-check {
+    background: var(--gold);
+    border-color: var(--gold);
+    color: var(--ink);
+    box-shadow: 0 0 16px rgba(201,168,76,0.5);
+  }
+
+  /* SUBMIT BTN */
+  .submit-btn {
+    width: 100%;
+    padding: 18px;
+    background: linear-gradient(135deg, var(--blood) 0%, #6b1212 50%, var(--blood) 100%);
+    border: 1px solid var(--ember);
+    color: var(--pale-gold);
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 14px;
+    letter-spacing: 3px;
+    text-transform: uppercase;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s;
+    margin-top: 8px;
+  }
+  .submit-btn::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(135deg, transparent 30%, rgba(255,255,255,0.05) 50%, transparent 70%);
+    transform: translateX(-100%);
+    transition: transform 0.5s;
+  }
+  .submit-btn:hover::before { transform: translateX(100%); }
+  .submit-btn:hover {
+    background: linear-gradient(135deg, var(--ember), #8b1a1a, var(--ember));
+    box-shadow: 0 0 30px rgba(192,57,43,0.4);
+    transform: translateY(-1px);
+  }
+  .submit-btn:disabled {
+    opacity: 0.4;
+    cursor: not-allowed;
+    transform: none;
+  }
+
+  /* SUCCESS */
+  .success-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.9);
+    z-index: 100;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    text-align: center;
+    padding: 40px;
+  }
+  .success-overlay.show {
+    display: flex;
+    animation: fadeIn 0.5s ease;
+  }
+  @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+  .success-seal {
+    font-size: 80px;
+    margin-bottom: 24px;
+    animation: sealDrop 0.6s 0.3s cubic-bezier(0.175,0.885,0.32,1.275) both;
+  }
+  @keyframes sealDrop {
+    from { opacity: 0; transform: scale(0.3) rotate(-20deg); }
+    to { opacity: 1; transform: scale(1) rotate(0deg); }
+  }
+  .success-title {
+    font-family: 'Cinzel Decorative', serif;
+    font-size: 28px;
+    color: var(--gold);
+    margin-bottom: 12px;
+    text-shadow: 0 0 30px rgba(201,168,76,0.5);
+  }
+  .success-msg {
+    font-size: 16px;
+    color: var(--pale-gold);
+    font-style: italic;
+    max-width: 400px;
+    line-height: 1.8;
+    margin-bottom: 32px;
+  }
+  .close-success {
+    padding: 12px 32px;
+    background: transparent;
+    border: 1px solid var(--gold);
+    color: var(--gold);
+    font-family: 'Cinzel', serif;
+    font-size: 12px;
+    letter-spacing: 3px;
+    cursor: pointer;
+    transition: all 0.3s;
+    text-transform: uppercase;
+  }
+  .close-success:hover { background: var(--gold); color: var(--ink); }
+
+  /* CHAR COUNT */
+  .char-count {
+    text-align: right;
+    font-size: 11px;
+    color: var(--ash);
+    margin-top: 4px;
+    font-family: 'Cinzel', serif;
+    letter-spacing: 1px;
+  }
+  .char-count.warn { color: var(--ember); }
+
+  /* Two col */
+  .two-col {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 20px;
+  }
+
+  @media (max-width: 560px) {
+    .two-col { grid-template-columns: 1fr; }
+    .checkbox-group { grid-template-columns: 1fr; }
+    .form-card { padding: 24px 20px; }
+    h1 { font-size: 22px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- Seal Watermark -->
+<svg class="seal-bg" viewBox="0 0 200 200" fill="none" xmlns="http://www.w3.org/2000/svg">
+  <circle cx="100" cy="100" r="95" stroke="white" stroke-width="2"/>
+  <circle cx="100" cy="100" r="80" stroke="white" stroke-width="1"/>
+  <polygon points="100,10 190,60 190,140 100,190 10,140 10,60" stroke="white" stroke-width="1.5" fill="none"/>
+  <circle cx="100" cy="100" r="30" stroke="white" stroke-width="2"/>
+  <line x1="100" y1="10" x2="100" y2="70" stroke="white" stroke-width="1"/>
+  <line x1="190" y1="60" x2="135" y2="85" stroke="white" stroke-width="1"/>
+  <line x1="190" y1="140" x2="135" y2="115" stroke="white" stroke-width="1"/>
+  <line x1="100" y1="190" x2="100" y2="130" stroke="white" stroke-width="1"/>
+  <line x1="10" y1="140" x2="65" y2="115" stroke="white" stroke-width="1"/>
+  <line x1="10" y1="60" x2="65" y2="85" stroke="white" stroke-width="1"/>
+  <text x="100" y="106" text-anchor="middle" font-size="12" fill="white" font-family="serif">忍</text>
+</svg>
+
+<div class="container">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="village-seal">
+      <svg viewBox="0 0 100 100" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <circle cx="50" cy="50" r="46" stroke="#c9a84c" stroke-width="1.5"/>
+        <circle cx="50" cy="50" r="38" stroke="#c9a84c" stroke-width="0.8" stroke-dasharray="3 3"/>
+        <polygon points="50,8 88,30 88,70 50,92 12,70 12,30" stroke="#c9a84c" stroke-width="1.5" fill="rgba(201,168,76,0.05)"/>
+        <text x="50" y="57" text-anchor="middle" font-size="28" fill="#c9a84c" font-family="serif" font-weight="bold">忍</text>
+        <circle cx="50" cy="50" r="20" stroke="#c9a84c" stroke-width="0.8" fill="none"/>
+      </svg>
+    </div>
+    <div class="header-tag">Shinobi Regained — Staff Division</div>
+    <h1>Lore Actor<br>Application</h1>
+    <p class="subtitle">Serve the story. Shape the world.</p>
+  </div>
+
+  <!-- WARNING -->
+  <div class="warning-scroll">
+    <div class="warning-title">⛩ Read Before Applying ⛩</div>
+    <div class="warning-rule">
+      <span class="rule-icon">✦</span>
+      <span><span class="rule-bold">Lore Actors are NOT OC players.</span> An OC (Original Character) is a personal character you own and play as. A Lore Actor is a <em>staff role</em> — you will be given characters to portray in service of the story. <span class="rule-bold">You cannot hold both roles simultaneously.</span></span>
+    </div>
+    <div class="warning-rule">
+      <span class="rule-icon">✦</span>
+      <span><span class="rule-bold">Lore Actors cannot be Kage.</span> The Kage position is reserved for OC players who have earned it through roleplay progression. Lore Actors operate behind the scenes as side characters — not as village leaders.</span>
+    </div>
+    <div class="warning-rule">
+      <span class="rule-icon">✦</span>
+      <span><span class="rule-bold">You will play multiple side characters.</span> Your purpose is to progress and enrich the server's lore — NPCs, antagonists, messengers, merchants, missing-nin, and more. No single character is "yours" to keep.</span>
+    </div>
+    <div class="warning-rule">
+      <span class="rule-icon">✦</span>
+      <span>Lore Actors are expected to be <em>available, reliable, and impartial.</em> You serve the narrative, not personal gain. Abuse of the role will result in immediate removal.</span>
+    </div>
+  </div>
+
+  <!-- FORM -->
+  <form class="form-card" id="appForm" onsubmit="return handleSubmit(event)">
+
+    <!-- SECTION: Identity -->
+    <div class="section-label">I. Applicant Identity</div>
+
+    <div class="two-col">
+      <div class="form-group">
+        <label for="robloxUser">Roblox Username <span class="req">*</span></label>
+        <input type="text" id="robloxUser" placeholder="e.g. ShadowNin_XV" required>
+      </div>
+      <div class="form-group">
+        <label for="discordUser">Discord Tag <span class="req">*</span></label>
+        <input type="text" id="discordUser" placeholder="e.g. username#0000" required>
+      </div>
+    </div>
+
+    <div class="two-col">
+      <div class="form-group">
+        <label for="age">Age <span class="req">*</span></label>
+        <input type="number" id="age" placeholder="Your age" min="1" max="99" required>
+      </div>
+      <div class="form-group">
+        <label for="timezone">Timezone <span class="req">*</span></label>
+        <select id="timezone" required>
+          <option value="" disabled selected>Select timezone</option>
+          <option>UTC-12 to UTC-10 (Pacific Islands)</option>
+          <option>UTC-9 / UTC-8 (Alaska / PST)</option>
+          <option>UTC-7 / UTC-6 (MST / CST)</option>
+          <option>UTC-5 / UTC-4 (EST / Atlantic)</option>
+          <option>UTC-3 / UTC-2 (Brazil / South Atlantic)</option>
+          <option>UTC-1 / UTC+0 (Azores / GMT/UTC)</option>
+          <option>UTC+1 / UTC+2 (CET / EET)</option>
+          <option>UTC+3 / UTC+4 (Moscow / Gulf)</option>
+          <option>UTC+5 / UTC+5:30 (Pakistan / India)</option>
+          <option>UTC+6 / UTC+7 (Bangladesh / SE Asia)</option>
+          <option>UTC+8 / UTC+9 (China / Japan/KST)</option>
+          <option>UTC+10 / UTC+12 (AEST / Pacific)</option>
+        </select>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="availability">Weekly Availability <span class="req">*</span></label>
+      <select id="availability" required>
+        <option value="" disabled selected>How many hours can you dedicate per week?</option>
+        <option>Less than 3 hours</option>
+        <option>3–6 hours</option>
+        <option>6–10 hours</option>
+        <option>10–15 hours</option>
+        <option>15+ hours</option>
+      </select>
+    </div>
+
+    <div class="kunai-divider"><span>✦</span></div>
+
+    <!-- SECTION: Experience -->
+    <div class="section-label">II. Roleplay Experience</div>
+
+    <div class="form-group">
+      <label for="rpExp">Overall RP Experience <span class="req">*</span></label>
+      <div class="radio-group" id="rpExp">
+        <label class="radio-item"><input type="radio" name="rpExp" value="Beginner" required><span class="dot"></span><span>Beginner</span></label>
+        <label class="radio-item"><input type="radio" name="rpExp" value="Intermediate"><span class="dot"></span><span>Intermediate</span></label>
+        <label class="radio-item"><input type="radio" name="rpExp" value="Advanced"><span class="dot"></span><span>Advanced</span></label>
+        <label class="radio-item"><input type="radio" name="rpExp" value="Veteran"><span class="dot"></span><span>Veteran</span></label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="prevGames">RP Games You've Played</label>
+      <input type="text" id="prevGames">
+    </div>
+
+    <div class="form-group">
+      <label>Roleplay Styles You're Comfortable With <span class="req">*</span></label>
+      <div class="checkbox-group">
+        <label class="checkbox-item"><input type="checkbox" name="rpStyle" value="Combat RP"><span class="box">✓</span><span>Combat RP</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="rpStyle" value="Political/Dialogue"><span class="box">✓</span><span>Political / Dialogue</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="rpStyle" value="Villain Portrayal"><span class="box">✓</span><span>Villain Portrayal</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="rpStyle" value="Merchant/NPC"><span class="box">✓</span><span>Merchant / NPC</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="rpStyle" value="Mentor/Teacher"><span class="box">✓</span><span>Mentor / Teacher</span></label>
+        <label class="checkbox-item"><input type="checkbox" name="rpStyle" value="Espionage/Spy"><span class="box">✓</span><span>Espionage / Spy</span></label>
+      </div>
+    </div>
+
+    <div class="kunai-divider"><span>✦</span></div>
+
+    <!-- SECTION: Lore -->
+    <div class="section-label">III. Naruto Lore Knowledge</div>
+
+    <div class="form-group">
+      <label>How well do you know Naruto lore? <span class="req">*</span></label>
+      <div class="radio-group">
+        <label class="radio-item"><input type="radio" name="loreLevel" value="Basic" required><span class="dot"></span><span>Basic</span></label>
+        <label class="radio-item"><input type="radio" name="loreLevel" value="Moderate"><span class="dot"></span><span>Moderate</span></label>
+        <label class="radio-item"><input type="radio" name="loreLevel" value="Deep"><span class="dot"></span><span>Deep</span></label>
+        <label class="radio-item"><input type="radio" name="loreLevel" value="Encyclopedia"><span class="dot"></span><span>Encyclopedia-level</span></label>
+      </div>
+    </div>
+
+    <div class="form-group">
+      <label for="loreQ">Lore Question: What is the role of a Jonin-Commander, and how do they differ from an ANBU Commander? <span class="req">*</span></label>
+      <textarea id="loreQ" placeholder="Answer in your own words..." required></textarea>
+      <div class="char-count" id="loreQCount">0 / 800</div>
+    </div>
+
+    <div class="kunai-divider"><span>✦</span></div>
+
+    <!-- SECTION: Motivation -->
+    <div class="section-label">IV. Suitability & Motivation</div>
+
+    <div class="form-group">
+      <label for="whyActor">Why do you want to be a Lore Actor rather than an OC player? <span class="req">*</span></label>
+      <textarea id="whyActor" placeholder="Be honest and specific..." required></textarea>
+      <div class="char-count" id="whyActorCount">0 / 800</div>
+    </div>
+
+    <div class="form-group">
+      <label for="charIdea">Describe a side character you'd enjoy playing to push lore forward. <span class="req">*</span></label>
+      <textarea id="charIdea" placeholder="Name, background, purpose in the story — does not need to be a canon character..." required></textarea>
+      <div class="char-count" id="charIdeaCount">0 / 800</div>
+      <div class="form-hint">Note: This is to gauge creativity. Accepted characters will be assigned by lore staff — this is not a guarantee your idea will be used.</div>
+    </div>
+
+    <div class="form-group">
+      <label for="scenario">Scenario: A lore event requires you to play a villain who manipulates and deceives players — including players you're friends with — to progress the story. How do you handle this?</label>
+      <textarea id="scenario" placeholder="Your response..."></textarea>
+    </div>
+
+    <div class="form-group">
+      <label for="extraInfo">Anything else you'd like us to know?</label>
+      <textarea id="extraInfo" placeholder="Additional skills, references, past staff experience, etc." style="min-height:80px"></textarea>
+    </div>
+
+    <!-- OATH -->
+    <div class="oath-section">
+      <p class="oath-text">
+        I understand that as a <strong>Lore Actor</strong>, I am not an OC player.<br>
+        I will not hold or pursue a <strong>Kage position</strong>.<br>
+        I will portray <strong>multiple characters</strong> as assigned by lore staff.<br>
+        I will serve the story with <strong>integrity, impartiality, and commitment.</strong><br>
+        Violation of these terms may result in my removal without appeal.
+      </p>
+      <label class="oath-confirm" id="oathLabel">
+        <input type="checkbox" id="oath" required onchange="updateSubmit()">
+        <span class="oath-check" id="oathBox">✓</span>
+        I swear this oath upon my honor as a shinobi
+      </label>
+    </div>
+
+    <button class="submit-btn" type="submit" id="submitBtn" disabled>
+      Submit Application
+    </button>
+
+  </form>
+
+</div>
+
+<!-- SUCCESS -->
+<div class="success-overlay" id="successOverlay">
+  <div class="success-seal">📜</div>
+  <div class="success-title">Application Received</div>
+  <p class="success-msg">Your application has been sealed and delivered to lore staff. You will be contacted via Discord. Train well, shinobi — the story awaits.</p>
+  <button class="close-success" onclick="document.getElementById('successOverlay').classList.remove('show')">Return to the Village</button>
+</div>
+
+<script>
+  // =============================================
+  //  PASTE YOUR DISCORD WEBHOOK URL BELOW
+  // =============================================
+  const WEBHOOK_URL = "https://discord.com/api/webhooks/1483845392054485162/wj1DKbyPTZNV7h1Kznha-UEWwdssQ-A18uLjktVEk4VWqixWkQdvMKmB0PgrNewkUA0T";
+  // =============================================
+
+  // Character counters
+  function setupCounter(id, countId, max = 800) {
+    const el = document.getElementById(id);
+    const counter = document.getElementById(countId);
+    if (!el || !counter) return;
+    el.addEventListener('input', () => {
+      const len = el.value.length;
+      counter.textContent = `${len} / ${max}`;
+      counter.classList.toggle('warn', len > max * 0.9);
+    });
+  }
+  setupCounter('loreQ', 'loreQCount');
+  setupCounter('whyActor', 'whyActorCount');
+  setupCounter('charIdea', 'charIdeaCount');
+
+  // Oath gates submit
+  function updateSubmit() {
+    const oath = document.getElementById('oath').checked;
+    document.getElementById('submitBtn').disabled = !oath;
+    document.getElementById('oathBox').style.background = oath ? 'var(--gold)' : '';
+    document.getElementById('oathBox').style.color = oath ? 'var(--ink)' : '';
+    document.getElementById('oathBox').style.boxShadow = oath ? '0 0 16px rgba(201,168,76,0.5)' : '';
+  }
+
+  // Radio style update
+  document.querySelectorAll('.radio-item input').forEach(input => {
+    input.addEventListener('change', () => {
+      document.querySelectorAll(`input[name="${input.name}"]`).forEach(r => {
+        r.closest('.radio-item').classList.toggle('selected', r.checked);
+      });
+    });
+  });
+
+  function truncate(str, max = 1024) {
+    if (!str) return '_Not provided_';
+    return str.length > max ? str.slice(0, max - 3) + '...' : str;
+  }
+
+  // Submit
+  async function handleSubmit(e) {
+    e.preventDefault();
+
+    const styles = document.querySelectorAll('input[name="rpStyle"]:checked');
+    if (styles.length === 0) {
+      alert('Please select at least one roleplay style you are comfortable with.');
+      return false;
+    }
+
+    if (!WEBHOOK_URL || WEBHOOK_URL === "YOUR_DISCORD_WEBHOOK_URL_HERE") {
+      alert('⚠️ No webhook URL set. Open the HTML file and paste your Discord Webhook URL into the WEBHOOK_URL variable at the top of the script.');
+      return false;
+    }
+
+    const btn = document.getElementById('submitBtn');
+    btn.disabled = true;
+    btn.textContent = 'Sending…';
+
+    const roblox    = document.getElementById('robloxUser').value.trim();
+    const discord   = document.getElementById('discordUser').value.trim();
+    const age       = document.getElementById('age').value;
+    const timezone  = document.getElementById('timezone').value;
+    const avail     = document.getElementById('availability').value;
+    const prevGames = document.getElementById('prevGames').value.trim();
+    const loreLevel = document.querySelector('input[name="loreLevel"]:checked')?.value || 'Not answered';
+    const rpExp     = document.querySelector('input[name="rpExp"]:checked')?.value || 'Not answered';
+    const rpStyles  = [...styles].map(s => s.value).join(', ');
+    const loreQ     = document.getElementById('loreQ').value.trim();
+    const whyActor  = document.getElementById('whyActor').value.trim();
+    const charIdea  = document.getElementById('charIdea').value.trim();
+    const scenario  = document.getElementById('scenario').value.trim();
+    const extra     = document.getElementById('extraInfo').value.trim();
+
+    const payload = {
+      username: "Lore Actor Applications",
+      avatar_url: "https://i.imgur.com/4M34hi2.png",
+      embeds: [
+        {
+          title: "📜 New Lore Actor Application",
+          color: 0xC9A84C,
+          thumbnail: { url: "https://i.imgur.com/4M34hi2.png" },
+          fields: [
+            { name: "🎮 Roblox Username",   value: roblox || '_Not provided_',   inline: true },
+            { name: "💬 Discord Tag",        value: discord || '_Not provided_',  inline: true },
+            { name: "🕐 Age",               value: age || '_Not provided_',      inline: true },
+            { name: "🌍 Timezone",           value: timezone || '_Not provided_', inline: true },
+            { name: "⏱ Weekly Availability", value: avail || '_Not provided_',   inline: true },
+            { name: "🎯 RP Experience",      value: rpExp,                        inline: true },
+            { name: "📖 Lore Knowledge",     value: loreLevel,                    inline: true },
+            { name: "🎭 RP Styles",          value: rpStyles || '_None selected_',inline: false },
+            { name: "🕹 Past Naruto Games",  value: truncate(prevGames),          inline: false },
+            { name: "📚 Lore Question Answer", value: truncate(loreQ),            inline: false },
+            { name: "❓ Why Lore Actor?",    value: truncate(whyActor),           inline: false },
+            { name: "🧑 Side Character Pitch", value: truncate(charIdea),         inline: false },
+            { name: "⚔️ Villain Scenario",   value: truncate(scenario),           inline: false },
+            { name: "📝 Additional Info",    value: truncate(extra),              inline: false },
+          ],
+          footer: { text: "Shinobi Regained — Lore Actor Division" },
+          timestamp: new Date().toISOString()
+        }
+      ]
+    };
+
+    try {
+      const res = await fetch(WEBHOOK_URL, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(payload)
+      });
+
+      if (res.ok || res.status === 204) {
+        document.getElementById('successOverlay').classList.add('show');
+        document.getElementById('appForm').reset();
+        document.querySelectorAll('.radio-item').forEach(r => r.classList.remove('selected'));
+      } else {
+        throw new Error(`Discord returned status ${res.status}`);
+      }
+    } catch (err) {
+      alert('⚠️ Failed to send application. Check your Webhook URL and try again.\n\nError: ' + err.message);
+      btn.disabled = false;
+      btn.textContent = 'Submit Application';
+    }
+
+    return false;
+  }
+</script>
+</body>
+</html>
